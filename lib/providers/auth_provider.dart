@@ -46,6 +46,28 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<UserModel> _searchResults = [];
+  List<UserModel> get searchResults => _searchResults;
+
+  Future<void> searchUsers(String query) async {
+    if (query.isEmpty) {
+      _searchResults = [];
+      notifyListeners();
+      return;
+    }
+    
+    _isLoading = true;
+    notifyListeners();
+    try {
+      _searchResults = await _authRepository.searchUsers(query);
+    } catch (e) {
+      _searchResults = [];
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> checkAuth() async {
     final userId = await _authRepository.getUserId();
     if (userId != null) {

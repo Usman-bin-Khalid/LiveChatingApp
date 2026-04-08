@@ -49,6 +49,22 @@ class AuthRepository {
     await prefs.remove('userId');
   }
 
+  Future<List<UserModel>> searchUsers(String query) async {
+    try {
+      final response = await _apiService.dio.get('/users/search', queryParameters: {
+        'query': query,
+      });
+
+      if (response.statusCode == 200) {
+        final List<dynamic> usersData = response.data;
+        return usersData.map((json) => UserModel.fromJson(json)).toList();
+      }
+    } catch (e) {
+      print('Search users error: $e');
+    }
+    return [];
+  }
+
   Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('userId');
