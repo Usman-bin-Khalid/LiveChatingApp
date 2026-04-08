@@ -1,3 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:live_chating_apis/core/theme/app_theme.dart';
+import 'package:live_chating_apis/providers/home_provider.dart';
+import 'package:live_chating_apis/providers/theme_provider.dart';
 import 'package:live_chating_apis/data/services/api_service.dart';
 import 'package:live_chating_apis/data/services/socket_service.dart';
 import 'package:live_chating_apis/data/repositories/auth_repository.dart';
@@ -5,6 +10,7 @@ import 'package:live_chating_apis/data/repositories/chat_repository.dart';
 import 'package:live_chating_apis/providers/auth_provider.dart';
 import 'package:live_chating_apis/providers/chat_provider.dart';
 import 'package:live_chating_apis/views/screens/auth/login_screen.dart';
+import 'package:live_chating_apis/views/screens/chat/chat_list_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,15 +38,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
+    return Consumer2<ThemeProvider, AuthProvider>(
+      builder: (context, themeProvider, authProvider, child) {
         return MaterialApp(
           title: 'Live Chatting APIs',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
-          home: const HomeScreen(),
+          home: authProvider.isAuthenticated ? const ChatListScreen() : const LoginScreen(),
         );
       },
     );

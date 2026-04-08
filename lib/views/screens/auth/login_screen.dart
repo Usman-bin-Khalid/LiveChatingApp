@@ -18,9 +18,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
       return;
     }
 
@@ -30,7 +30,9 @@ class _LoginScreenState extends State<LoginScreen> {
     );
     if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login failed. Please check your credentials.')),
+        const SnackBar(
+          content: Text('Login failed. Please check your credentials.'),
+        ),
       );
     }
   }
@@ -52,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Icons.chat_bubble_rounded,
                 size: 80,
                 color: theme.colorScheme.primary,
-              ).animate().scale(duration: 600.ms, curve: Curves.backOut),
+              ).animate().scale(duration: 600.ms, curve: Curves.easeInOut),
               const SizedBox(height: 24),
               Text(
                 'Welcome Back',
@@ -104,11 +106,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     ? const SizedBox(
                         height: 20,
                         width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Text(
                         'Login',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
               ).animate().fadeIn(delay: 700.ms).scale(),
               const SizedBox(height: 24),
