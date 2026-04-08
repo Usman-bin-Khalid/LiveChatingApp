@@ -61,6 +61,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       _searchResults = await _authRepository.searchUsers(query);
     } catch (e) {
+      print('DEBUG: searchUsers error: $e');
       _searchResults = [];
     } finally {
       _isLoading = false;

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../data/models/user_model.dart';
 import '../data/models/conversation_model.dart';
 import '../data/models/message_model.dart';
 import '../data/repositories/chat_repository.dart';
+import '../data/repositories/auth_repository.dart';
 import '../data/services/socket_service.dart';
 
 class ChatProvider extends ChangeNotifier {
@@ -10,7 +12,9 @@ class ChatProvider extends ChangeNotifier {
   
   List<ConversationModel> _inbox = [];
   List<MessageModel> _messages = [];
+  List<UserModel> _searchResults = [];
   bool _isLoading = false;
+  bool _isSearching = false;
 
   ChatProvider(this._chatRepository, this._socketService) {
     _socketService.messages.listen((message) {
@@ -24,7 +28,30 @@ class ChatProvider extends ChangeNotifier {
 
   List<ConversationModel> get inbox => _inbox;
   List<MessageModel> get messages => _messages;
+  List<UserModel> get searchResults => _searchResults;
   bool get isLoading => _isLoading;
+  bool get isSearching => _isSearching;
+
+  Future<void> searchUsers(String query, AuthRepository authRepo) async {
+    if (query.isEmpty) {
+      _searchResults = [];
+      notifyListeners();
+      return;
+    }
+    _isSearching = true;
+    notifyListeners();
+    try {
+      _searchResults = await authRepo.searchUsers(query);
+    } finally {
+      _isSearching = false;
+      notifyListeners();
+    }
+  }
+
+  void clearSearch() {
+    _searchResults = [];
+    notifyListeners();
+  }
 
   Future<void> fetchInbox() async {
     _isLoading = true;

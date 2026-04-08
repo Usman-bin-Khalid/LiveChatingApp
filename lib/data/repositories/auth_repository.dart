@@ -9,19 +9,19 @@ class AuthRepository {
 
   Future<UserModel?> login(String email, String password) async {
     try {
-      final response = await _apiService.dio.post('/auth/login', data: {
-        'email': email,
-        'password': password,
-      });
+      final response = await _apiService.dio.post(
+        '/auth/login',
+        data: {'email': email, 'password': password},
+      );
 
       if (response.statusCode == 200) {
         final token = response.data['token'];
         final userData = response.data['user'];
-        
+
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
         await prefs.setString('userId', userData['id'] ?? userData['_id']);
-        
+
         return UserModel.fromJson(userData);
       }
     } catch (e) {
@@ -32,11 +32,10 @@ class AuthRepository {
 
   Future<bool> signup(String username, String email, String password) async {
     try {
-      final response = await _apiService.dio.post('/auth/signup', data: {
-        'username': username,
-        'email': email,
-        'password': password,
-      });
+      final response = await _apiService.dio.post(
+        '/auth/signup',
+        data: {'username': username, 'email': email, 'password': password},
+      );
       return response.statusCode == 201;
     } catch (e) {
       rethrow;
@@ -51,9 +50,10 @@ class AuthRepository {
 
   Future<List<UserModel>> searchUsers(String query) async {
     try {
-      final response = await _apiService.dio.get('/users/search', queryParameters: {
-        'query': query,
-      });
+      final response = await _apiService.dio.get(
+        '/auth/search',
+        queryParameters: {'query': query},
+      );
 
       if (response.statusCode == 200) {
         final List<dynamic> usersData = response.data;
