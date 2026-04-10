@@ -9,8 +9,7 @@ import 'package:live_chating_apis/data/repositories/auth_repository.dart';
 import 'package:live_chating_apis/data/repositories/chat_repository.dart';
 import 'package:live_chating_apis/providers/auth_provider.dart';
 import 'package:live_chating_apis/providers/chat_provider.dart';
-import 'package:live_chating_apis/views/screens/auth/login_screen.dart';
-import 'package:live_chating_apis/views/screens/chat/chat_list_screen.dart';
+import 'package:live_chating_apis/views/screens/intro/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,7 +45,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
-          home: authProvider.isAuthenticated ? const ChatListScreen() : const LoginScreen(),
+          home: const SplashScreen(),
         );
       },
     );
