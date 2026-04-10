@@ -22,35 +22,34 @@ class CustomTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: theme.colorScheme.primary,
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          child: Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface.withOpacity(0.8),
+            ),
           ),
         ),
-        const SizedBox(height: 8),
         TextField(
           controller: controller,
           obscureText: isPassword,
           style: theme.textTheme.bodyLarge,
           decoration: InputDecoration(
             hintText: hint,
-            prefixIcon: Icon(icon, color: theme.colorScheme.primary.withOpacity(0.7)),
-            filled: true,
-            fillColor: theme.colorScheme.surface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
+            prefixIcon: Icon(
+              icon,
+              color: theme.colorScheme.primary.withOpacity(0.5),
+              size: 20,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: theme.colorScheme.primary.withOpacity(0.1)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: theme.colorScheme.primary),
-            ),
+            suffixIcon: isPassword
+                ? Icon(
+                    Icons.visibility_off_outlined,
+                    color: theme.colorScheme.onSurface.withOpacity(0.3),
+                    size: 20,
+                  )
+                : null,
           ),
         ),
       ],

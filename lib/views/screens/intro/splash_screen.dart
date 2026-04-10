@@ -8,7 +8,8 @@ import 'package:provider/provider.dart';
 import '../../../providers/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final bool isNavigating;
+  const SplashScreen({super.key, this.isNavigating = true});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -18,7 +19,9 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _navigateToNext();
+    if (widget.isNavigating) {
+      _navigateToNext();
+    }
   }
 
   Future<void> _navigateToNext() async {

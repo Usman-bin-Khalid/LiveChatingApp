@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:live_chating_apis/core/theme/app_theme.dart';
 import 'package:live_chating_apis/providers/home_provider.dart';
 import 'package:live_chating_apis/providers/theme_provider.dart';
@@ -9,7 +10,10 @@ import 'package:live_chating_apis/data/repositories/auth_repository.dart';
 import 'package:live_chating_apis/data/repositories/chat_repository.dart';
 import 'package:live_chating_apis/providers/auth_provider.dart';
 import 'package:live_chating_apis/providers/chat_provider.dart';
+import 'package:live_chating_apis/views/screens/auth/login_screen.dart';
+import 'package:live_chating_apis/views/screens/chat/chat_list_screen.dart';
 import 'package:live_chating_apis/views/screens/intro/splash_screen.dart';
+import 'package:live_chating_apis/views/screens/intro/onboarding_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,8 +36,35 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _showSplash = true;
+  bool _showOnboarding = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initApp();
+  }
+
+  Future<void> _initApp() async {
+    final prefs = await SharedPreferences.getInstance();
+    final showOnboarding = prefs.getBool('showOnboarding') ?? true;
+    
+    await Future.delayed(const Duration(seconds: 3));
+    if (mounted) {
+      setState(() {
+        _showOnboarding = showOnboarding;
+        _showSplash = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +76,17 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
-          home: const SplashScreen(),
+          home: _showSplash 
+              ? const SplashScreen(isNavigating: false) 
+              : (_showOnboarding
+                  ? OnboardingScreen(onComplete: () {
+                      setState(() {
+                        _showOnboarding = false;
+                      });
+                    })
+                  : (authProvider.isAuthenticated 
+                      ? const ChatListScreen() 
+                      : const LoginScreen())),
         );
       },
     );

@@ -29,26 +29,29 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   void _sendMessage() {
     if (_messageController.text.trim().isEmpty) return;
-    
+
     final authProvider = context.read<AuthProvider>();
     if (authProvider.user != null) {
       context.read<ChatProvider>().sendMessage(
-        authProvider.user!.id,
-        widget.conversation.contactDetails.id,
-        _messageController.text.trim(),
-      );
-      _messageController.clear();
-      // Scroll to bottom
-      Future.delayed(const Duration(milliseconds: 100), () {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
+            authProvider.user!.id,
+            widget.conversation.contactDetails.id,
+            _messageController.text.trim(),
           );
-        }
-      });
+      _messageController.clear();
+      _scrollToBottom();
     }
+  }
+
+  void _scrollToBottom() {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   @override
@@ -58,27 +61,87 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        titleSpacing: 0,
+        leadingWidth: 70,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              shape: BoxShape.circle,
+              border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
+            ),
+            child: const Icon(Icons.arrow_back_ios_new_rounded, size: 16),
+          ),
+        ),
         title: Row(
           children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-              child: Text(
-                widget.conversation.contactDetails.username[0].toUpperCase(),
-                style: TextStyle(color: theme.colorScheme.primary, fontSize: 14, fontWeight: FontWeight.bold),
+            Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    theme.colorScheme.primary,
+                    theme.colorScheme.primary.withOpacity(0.7),
+                  ],
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  widget.conversation.contactDetails.username[0].toUpperCase(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.conversation.contactDetails.username, style: const TextStyle(fontSize: 16)),
-                Text('Online', style: TextStyle(fontSize: 12, color: theme.colorScheme.secondary)),
+                Text(
+                  widget.conversation.contactDetails.username,
+                  style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  children: [
+                    Container(
+                      height: 8,
+                      width: 8,
+                      decoration: const BoxDecoration(
+                        color: Colors.green,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Online',
+                      style: theme.textTheme.bodySmall?.copyWith(color: Colors.green),
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.videocam_rounded, size: 22),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.call_rounded, size: 22),
+            onPressed: () {},
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: Column(
         children: [
@@ -87,13 +150,34 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
                     controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                     itemCount: chatProvider.messages.length,
                     itemBuilder: (context, index) {
                       final message = chatProvider.messages[index];
                       final isMe = message.sender == authProvider.user?.id;
-                      
-                      return _ChatBubble(message: message.text, isMe: isMe, timestamp: message.createdAt);
+                      final showTime = index == 0 ||
+                          chatProvider.messages[index].createdAt
+                                  .difference(chatProvider.messages[index - 1].createdAt)
+                                  .inMinutes >
+                              10;
+
+                      return Column(
+                        children: [
+                          if (showTime)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: Text(
+                                DateFormat('EEEE, h:mm a').format(message.createdAt),
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ),
+                          _ChatBubble(
+                            message: message.text,
+                            isMe: isMe,
+                            timestamp: message.createdAt,
+                          ),
+                        ],
+                      );
                     },
                   ),
           ),
@@ -105,13 +189,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   Widget _buildMessageInput(ThemeData theme) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            offset: const Offset(0, -2),
+            offset: const Offset(0, -4),
             blurRadius: 10,
           ),
         ],
@@ -119,28 +204,58 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       child: SafeArea(
         child: Row(
           children: [
+            Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.add_rounded, color: theme.colorScheme.primary),
+              ),
+            ),
+            const SizedBox(width: 12),
             Expanded(
-              child: TextField(
-                controller: _messageController,
-                decoration: InputDecoration(
-                  hintText: 'Type a message...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide.none,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: TextField(
+                  controller: _messageController,
+                  maxLines: null,
+                  decoration: const InputDecoration(
+                    hintText: 'Type a message...',
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   ),
-                  filled: true,
-                  fillColor: theme.colorScheme.primary.withOpacity(0.05),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  onSubmitted: (_) => _sendMessage(),
                 ),
               ),
             ),
-            const SizedBox(width: 8),
-            IconButton(
-              onPressed: _sendMessage,
-              icon: Icon(Icons.send_rounded, color: theme.colorScheme.primary),
-              style: IconButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                padding: const EdgeInsets.all(12),
+            const SizedBox(width: 12),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    theme.colorScheme.primary,
+                    theme.colorScheme.primary.darken(10),
+                  ],
+                ),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.colorScheme.primary.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                onPressed: _sendMessage,
+                icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
               ),
             ),
           ],
@@ -162,47 +277,67 @@ class _ChatBubble extends StatelessWidget {
     final theme = Theme.of(context);
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-        decoration: BoxDecoration(
-          color: isMe ? theme.colorScheme.primary : theme.colorScheme.surface,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16),
-            topRight: const Radius.circular(16),
-            bottomLeft: Radius.circular(isMe ? 16 : 0),
-            bottomRight: Radius.circular(isMe ? 0 : 16),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              offset: const Offset(0, 2),
-              blurRadius: 4,
+      child: Column(
+        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(bottom: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+            decoration: BoxDecoration(
+              gradient: isMe
+                  ? LinearGradient(
+                      colors: [
+                        theme.colorScheme.primary,
+                        theme.colorScheme.primary.darken(10),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              color: isMe ? null : theme.colorScheme.surface,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(20),
+                topRight: const Radius.circular(20),
+                bottomLeft: Radius.circular(isMe ? 20 : 4),
+                bottomRight: Radius.circular(isMe ? 4 : 20),
+              ),
+              border: isMe ? null : Border.all(color: theme.dividerColor.withOpacity(0.05)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  offset: const Offset(0, 4),
+                  blurRadius: 10,
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
+            child: Text(
               message,
               style: TextStyle(
                 color: isMe ? Colors.white : theme.colorScheme.onSurface,
-                fontSize: 16,
+                fontSize: 15,
+                height: 1.4,
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
+          ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, curve: Curves.easeOutBack),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12, left: 4, right: 4),
+            child: Text(
               DateFormat.jm().format(timestamp),
-              style: TextStyle(
-                color: (isMe ? Colors.white : theme.colorScheme.onSurface).withOpacity(0.6),
-                fontSize: 10,
-              ),
+              style: theme.textTheme.bodySmall?.copyWith(fontSize: 10),
             ),
-          ],
-        ),
-      ).animate().fadeIn(duration: 200.ms).slideY(begin: 0.1),
+          ),
+        ],
+      ),
     );
+  }
+}
+
+extension ColorExtension on Color {
+  Color darken([int percent = 10]) {
+    assert(1 <= percent && percent <= 100);
+    var f = 1 - percent / 100;
+    return Color.fromARGB(
+        alpha, (red * f).round(), (green * f).round(), (blue * f).round());
   }
 }
