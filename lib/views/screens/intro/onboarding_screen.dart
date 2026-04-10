@@ -52,14 +52,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
 
+    // Logic to force pure white in light mode
+    final bool isLightMode = theme.brightness == Brightness.light;
+    final Color pureBackgroundColor = isLightMode
+        ? Colors.white
+        : theme.scaffoldBackgroundColor;
+
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: pureBackgroundColor,
       body: Stack(
         children: [
-          // Subtle animated background color matching the active theme
+          // This was the culprit:
           AnimatedContainer(
             duration: const Duration(milliseconds: 500),
-            color: _data[_currentPage].color.withOpacity(0.05),
+            // Change: If light mode, use transparent to ensure PURE white.
+            // If dark mode, keep the subtle tint.
+            color: isLightMode
+                ? Colors.transparent
+                : _data[_currentPage].color.withOpacity(0.05),
           ),
 
           PageView.builder(
@@ -109,16 +119,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    theme.scaffoldBackgroundColor,
-                    theme.scaffoldBackgroundColor.withOpacity(0.9),
-                    theme.scaffoldBackgroundColor.withOpacity(0.0),
+                    pureBackgroundColor,
+                    pureBackgroundColor.withOpacity(0.9),
+                    pureBackgroundColor.withOpacity(0.0),
                   ],
                 ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Interactive dot indicators
                   Row(
                     children: List.generate(
                       _data.length,
@@ -137,7 +146,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
 
-                  // Next / Get Started Button
                   GestureDetector(
                     onTap: () {
                       if (_currentPage == _data.length - 1) {
@@ -183,6 +191,153 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
     );
   }
+  // @override
+  // Widget build(BuildContext context) {
+  //   final theme = Theme.of(context);
+  //   final size = MediaQuery.of(context).size;
+
+  //   // Logic to force pure white in light mode
+  //   final bool isLightMode = theme.brightness == Brightness.light;
+  //   final Color pureBackgroundColor = isLightMode
+  //       ? Colors.white
+  //       : theme.scaffoldBackgroundColor;
+
+  //   return Scaffold(
+  //     // 1. Updated Scaffold background
+  //     backgroundColor: pureBackgroundColor,
+  //     body: Stack(
+  //       children: [
+  //         // 2. Updated AnimatedContainer to blend with pure white
+  //         AnimatedContainer(
+  //           duration: const Duration(milliseconds: 500),
+  //           // We keep the opacity low so the "pure white" remains the dominant feel
+  //           color: _data[_currentPage].color.withOpacity(
+  //             isLightMode ? 0.03 : 0.05,
+  //           ),
+  //         ),
+
+  //         PageView.builder(
+  //           controller: _pageController,
+  //           physics: const BouncingScrollPhysics(),
+  //           onPageChanged: (index) {
+  //             setState(() {
+  //               _currentPage = index;
+  //             });
+  //           },
+  //           itemCount: _data.length,
+  //           itemBuilder: (context, index) {
+  //             return _buildPage(
+  //               context,
+  //               _data[index],
+  //               size,
+  //               index == _currentPage,
+  //             );
+  //           },
+  //         ),
+
+  //         // Skip Button
+  //         Positioned(
+  //           top: MediaQuery.of(context).padding.top + 16,
+  //           right: 24,
+  //           child: TextButton(
+  //             onPressed: _completeOnboarding,
+  //             style: TextButton.styleFrom(
+  //               foregroundColor: theme.colorScheme.onSurface.withOpacity(0.5),
+  //             ),
+  //             child: const Text(
+  //               'Skip',
+  //               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+  //             ),
+  //           ).animate().fadeIn(delay: 500.ms),
+  //         ),
+
+  //         // Bottom Navigation Controls
+  //         Positioned(
+  //           bottom: 0,
+  //           left: 0,
+  //           right: 0,
+  //           child: Container(
+  //             padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
+  //             decoration: BoxDecoration(
+  //               gradient: LinearGradient(
+  //                 begin: Alignment.bottomCenter,
+  //                 end: Alignment.topCenter,
+  //                 colors: [
+  //                   // 3. Updated gradient to match the pure white background
+  //                   pureBackgroundColor,
+  //                   pureBackgroundColor.withOpacity(0.9),
+  //                   pureBackgroundColor.withOpacity(0.0),
+  //                 ],
+  //               ),
+  //             ),
+  //             child: Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //               children: [
+  //                 // Interactive dot indicators
+  //                 Row(
+  //                   children: List.generate(
+  //                     _data.length,
+  //                     (index) => AnimatedContainer(
+  //                       duration: const Duration(milliseconds: 300),
+  //                       margin: const EdgeInsets.only(right: 8),
+  //                       height: 8,
+  //                       width: _currentPage == index ? 32 : 8,
+  //                       decoration: BoxDecoration(
+  //                         color: _currentPage == index
+  //                             ? _data[_currentPage].color
+  //                             : theme.dividerColor.withOpacity(0.3),
+  //                         borderRadius: BorderRadius.circular(4),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+
+  //                 // Next / Get Started Button
+  //                 GestureDetector(
+  //                   onTap: () {
+  //                     if (_currentPage == _data.length - 1) {
+  //                       _completeOnboarding();
+  //                     } else {
+  //                       _pageController.nextPage(
+  //                         duration: const Duration(milliseconds: 500),
+  //                         curve: Curves.fastOutSlowIn,
+  //                       );
+  //                     }
+  //                   },
+  //                   child: AnimatedContainer(
+  //                     duration: const Duration(milliseconds: 300),
+  //                     height: 60,
+  //                     width: _currentPage == _data.length - 1 ? 160 : 60,
+  //                     decoration: BoxDecoration(
+  //                       color: _data[_currentPage].color,
+  //                       borderRadius: BorderRadius.circular(30),
+  //                     ),
+  //                     child: Center(
+  //                       child: _currentPage == _data.length - 1
+  //                           ? const Text(
+  //                               'Get Started',
+  //                               style: TextStyle(
+  //                                 color: Colors.white,
+  //                                 fontWeight: FontWeight.bold,
+  //                                 fontSize: 16,
+  //                               ),
+  //                             ).animate().fadeIn()
+  //                           : const Icon(
+  //                               Icons.arrow_forward_rounded,
+  //                               color: Colors.white,
+  //                               size: 28,
+  //                             ).animate().fadeIn(),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildPage(
     BuildContext context,
