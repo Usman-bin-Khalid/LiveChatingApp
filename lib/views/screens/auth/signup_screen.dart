@@ -26,7 +26,9 @@ class _SignupScreenState extends State<SignupScreen> {
           content: const Text('Please fill all fields'),
           backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -43,7 +45,9 @@ class _SignupScreenState extends State<SignupScreen> {
           content: const Text('Account created! Please login.'),
           backgroundColor: const Color(0xFF10B981),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       Navigator.pop(context);
@@ -53,7 +57,9 @@ class _SignupScreenState extends State<SignupScreen> {
           content: const Text('Signup failed. Email might already be in use.'),
           backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }
@@ -75,9 +81,7 @@ class _SignupScreenState extends State<SignupScreen> {
               return SingleChildScrollView(
                 physics: const ClampingScrollPhysics(),
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: IntrinsicHeight(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -92,9 +96,15 @@ class _SignupScreenState extends State<SignupScreen> {
                                 decoration: BoxDecoration(
                                   color: theme.colorScheme.surface,
                                   borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
+                                  border: Border.all(
+                                    color: theme.colorScheme.outline
+                                        .withOpacity(0.1),
+                                  ),
                                 ),
-                                child: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                                child: const Icon(
+                                  Icons.arrow_back_ios_new_rounded,
+                                  size: 20,
+                                ),
                               ),
                               onPressed: () => Navigator.pop(context),
                             ),
@@ -105,7 +115,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                   color: theme.colorScheme.surface,
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: theme.colorScheme.outline.withOpacity(0.1),
+                                    color: theme.colorScheme.outline
+                                        .withOpacity(0.1),
                                   ),
                                 ),
                                 child: Icon(
@@ -123,7 +134,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         Text(
                           'Create Account',
                           textAlign: TextAlign.center,
-                          style: theme.textTheme.displayLarge?.copyWith(fontSize: 32),
+                          style: theme.textTheme.displayLarge?.copyWith(
+                            fontSize: 32,
+                          ),
                         ).animate().fadeIn().slideY(begin: 0.2),
                         const SizedBox(height: 12),
                         Text(
@@ -159,10 +172,12 @@ class _SignupScreenState extends State<SignupScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: theme.colorScheme.primary,
                             foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(40),
+                            ),
                             padding: const EdgeInsets.symmetric(vertical: 18),
-                            elevation: 8,
-                            shadowColor: theme.colorScheme.primary.withOpacity(0.4),
+                            // elevation: 8,
+                            // shadowColor: theme.colorScheme.primary.withOpacity(0.4),
                           ),
                           child: isLoading
                               ? const SizedBox(
@@ -176,10 +191,18 @@ class _SignupScreenState extends State<SignupScreen> {
                               : Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text('Create Account',
-                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                    const Text(
+                                      'Create Account',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     const SizedBox(width: 8),
-                                    const Icon(Icons.arrow_forward_rounded, size: 20),
+                                    const Icon(
+                                      Icons.arrow_forward_rounded,
+                                      size: 20,
+                                    ),
                                   ],
                                 ),
                         ).animate().fadeIn(delay: 500.ms).scale(),

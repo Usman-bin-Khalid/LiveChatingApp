@@ -81,7 +81,7 @@ class _MyAppState extends State<MyApp> {
         return MaterialApp(
           title: 'Live Chatting APIs',
           debugShowCheckedModeBanner: false,
-          theme: AppTheme.darkTheme,
+          theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
           home: _showSplash

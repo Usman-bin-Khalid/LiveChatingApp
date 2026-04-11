@@ -24,7 +24,9 @@ class _LoginScreenState extends State<LoginScreen> {
           content: const Text('Please fill all fields'),
           backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -34,14 +36,16 @@ class _LoginScreenState extends State<LoginScreen> {
       _emailController.text.trim(),
       _passwordController.text.trim(),
     );
-    
+
     if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Login failed. Please check your credentials.'),
           backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }
@@ -64,9 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
               return SingleChildScrollView(
                 physics: const ClampingScrollPhysics(),
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: IntrinsicHeight(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -81,7 +83,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: theme.colorScheme.surface,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: theme.colorScheme.outline.withOpacity(0.1),
+                                  color: theme.colorScheme.outline.withOpacity(
+                                    0.1,
+                                  ),
                                 ),
                               ),
                               child: Icon(
@@ -96,24 +100,31 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const Spacer(flex: 2),
                         Center(
-                          child: Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.chat_bubble_rounded,
-                              size: 60,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                        ).animate().scale(duration: 600.ms, curve: Curves.easeInOut).fadeIn(),
+                              child: Container(
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary.withOpacity(
+                                    0.1,
+                                  ),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.chat_bubble_rounded,
+                                  size: 60,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                            )
+                            .animate()
+                            .scale(duration: 600.ms, curve: Curves.easeInOut)
+                            .fadeIn(),
                         const SizedBox(height: 32),
                         Text(
                           'Welcome Back',
                           textAlign: TextAlign.center,
-                          style: theme.textTheme.displayLarge?.copyWith(fontSize: 32),
+                          style: theme.textTheme.displayLarge?.copyWith(
+                            fontSize: 32,
+                          ),
                         ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
                         const SizedBox(height: 12),
                         Text(
@@ -156,10 +167,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: theme.colorScheme.primary,
                             foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(40),
+                            ),
                             padding: const EdgeInsets.symmetric(vertical: 18),
-                            elevation: 8,
-                            shadowColor: theme.colorScheme.primary.withOpacity(0.4),
+                            // elevation: 8,
+                            // shadowColor: theme.colorScheme.primary.withOpacity(0.4),
                           ),
                           child: isLoading
                               ? const SizedBox(
@@ -173,9 +186,18 @@ class _LoginScreenState extends State<LoginScreen> {
                               : Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text('Sign In', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                    const Text(
+                                      'Sign In',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     const SizedBox(width: 8),
-                                    const Icon(Icons.arrow_forward_rounded, size: 20),
+                                    const Icon(
+                                      Icons.arrow_forward_rounded,
+                                      size: 20,
+                                    ),
                                   ],
                                 ),
                         ).animate().fadeIn(delay: 700.ms).scale(),
@@ -191,7 +213,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               onTap: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (_) => const SignupScreen()),
+                                  MaterialPageRoute(
+                                    builder: (_) => const SignupScreen(),
+                                  ),
                                 );
                               },
                               child: Text(
