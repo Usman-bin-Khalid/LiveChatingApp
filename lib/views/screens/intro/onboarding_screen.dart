@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/theme_provider.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final VoidCallback? onComplete;
@@ -50,9 +52,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final themeProvider = context.watch<ThemeProvider>();
     final size = MediaQuery.of(context).size;
 
-    // Logic to force pure white in light mode
     final bool isLightMode = theme.brightness == Brightness.light;
     final Color pureBackgroundColor = isLightMode
         ? Colors.white
@@ -62,11 +64,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       backgroundColor: pureBackgroundColor,
       body: Stack(
         children: [
-          // This was the culprit:
           AnimatedContainer(
             duration: const Duration(milliseconds: 500),
-            // Change: If light mode, use transparent to ensure PURE white.
-            // If dark mode, keep the subtle tint.
             color: isLightMode
                 ? Colors.transparent
                 : _data[_currentPage].color.withOpacity(0.05),
@@ -91,20 +90,43 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             },
           ),
 
-          // Skip Button
+          // Theme Toggle & Skip Button Row
           Positioned(
-            top: MediaQuery.of(context).padding.top + 16,
-            right: 24,
-            child: TextButton(
-              onPressed: _completeOnboarding,
-              style: TextButton.styleFrom(
-                foregroundColor: theme.colorScheme.onSurface.withOpacity(0.5),
-              ),
-              child: const Text(
-                'Skip',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-              ),
-            ).animate().fadeIn(delay: 500.ms),
+            top: MediaQuery.of(context).padding.top + 10,
+            left: 20,
+            right: 20,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
+                    ),
+                    child: Icon(
+                      themeProvider.isDarkMode
+                          ? Icons.light_mode_rounded
+                          : Icons.dark_mode_rounded,
+                      size: 20,
+                    ),
+                  ),
+                  onPressed: () => themeProvider.toggleTheme(),
+                ),
+                TextButton(
+                  onPressed: _completeOnboarding,
+                  style: TextButton.styleFrom(
+                    foregroundColor: theme.colorScheme.onSurface.withOpacity(0.5),
+                  ),
+                  child: const Text(
+                    'Skip',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                  ),
+                ).animate().fadeIn(delay: 500.ms),
+              ],
+            ),
           ),
 
           // Bottom Navigation Controls
@@ -191,153 +213,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
     );
   }
-  // @override
-  // Widget build(BuildContext context) {
-  //   final theme = Theme.of(context);
-  //   final size = MediaQuery.of(context).size;
-
-  //   // Logic to force pure white in light mode
-  //   final bool isLightMode = theme.brightness == Brightness.light;
-  //   final Color pureBackgroundColor = isLightMode
-  //       ? Colors.white
-  //       : theme.scaffoldBackgroundColor;
-
-  //   return Scaffold(
-  //     // 1. Updated Scaffold background
-  //     backgroundColor: pureBackgroundColor,
-  //     body: Stack(
-  //       children: [
-  //         // 2. Updated AnimatedContainer to blend with pure white
-  //         AnimatedContainer(
-  //           duration: const Duration(milliseconds: 500),
-  //           // We keep the opacity low so the "pure white" remains the dominant feel
-  //           color: _data[_currentPage].color.withOpacity(
-  //             isLightMode ? 0.03 : 0.05,
-  //           ),
-  //         ),
-
-  //         PageView.builder(
-  //           controller: _pageController,
-  //           physics: const BouncingScrollPhysics(),
-  //           onPageChanged: (index) {
-  //             setState(() {
-  //               _currentPage = index;
-  //             });
-  //           },
-  //           itemCount: _data.length,
-  //           itemBuilder: (context, index) {
-  //             return _buildPage(
-  //               context,
-  //               _data[index],
-  //               size,
-  //               index == _currentPage,
-  //             );
-  //           },
-  //         ),
-
-  //         // Skip Button
-  //         Positioned(
-  //           top: MediaQuery.of(context).padding.top + 16,
-  //           right: 24,
-  //           child: TextButton(
-  //             onPressed: _completeOnboarding,
-  //             style: TextButton.styleFrom(
-  //               foregroundColor: theme.colorScheme.onSurface.withOpacity(0.5),
-  //             ),
-  //             child: const Text(
-  //               'Skip',
-  //               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-  //             ),
-  //           ).animate().fadeIn(delay: 500.ms),
-  //         ),
-
-  //         // Bottom Navigation Controls
-  //         Positioned(
-  //           bottom: 0,
-  //           left: 0,
-  //           right: 0,
-  //           child: Container(
-  //             padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
-  //             decoration: BoxDecoration(
-  //               gradient: LinearGradient(
-  //                 begin: Alignment.bottomCenter,
-  //                 end: Alignment.topCenter,
-  //                 colors: [
-  //                   // 3. Updated gradient to match the pure white background
-  //                   pureBackgroundColor,
-  //                   pureBackgroundColor.withOpacity(0.9),
-  //                   pureBackgroundColor.withOpacity(0.0),
-  //                 ],
-  //               ),
-  //             ),
-  //             child: Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //               children: [
-  //                 // Interactive dot indicators
-  //                 Row(
-  //                   children: List.generate(
-  //                     _data.length,
-  //                     (index) => AnimatedContainer(
-  //                       duration: const Duration(milliseconds: 300),
-  //                       margin: const EdgeInsets.only(right: 8),
-  //                       height: 8,
-  //                       width: _currentPage == index ? 32 : 8,
-  //                       decoration: BoxDecoration(
-  //                         color: _currentPage == index
-  //                             ? _data[_currentPage].color
-  //                             : theme.dividerColor.withOpacity(0.3),
-  //                         borderRadius: BorderRadius.circular(4),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-
-  //                 // Next / Get Started Button
-  //                 GestureDetector(
-  //                   onTap: () {
-  //                     if (_currentPage == _data.length - 1) {
-  //                       _completeOnboarding();
-  //                     } else {
-  //                       _pageController.nextPage(
-  //                         duration: const Duration(milliseconds: 500),
-  //                         curve: Curves.fastOutSlowIn,
-  //                       );
-  //                     }
-  //                   },
-  //                   child: AnimatedContainer(
-  //                     duration: const Duration(milliseconds: 300),
-  //                     height: 60,
-  //                     width: _currentPage == _data.length - 1 ? 160 : 60,
-  //                     decoration: BoxDecoration(
-  //                       color: _data[_currentPage].color,
-  //                       borderRadius: BorderRadius.circular(30),
-  //                     ),
-  //                     child: Center(
-  //                       child: _currentPage == _data.length - 1
-  //                           ? const Text(
-  //                               'Get Started',
-  //                               style: TextStyle(
-  //                                 color: Colors.white,
-  //                                 fontWeight: FontWeight.bold,
-  //                                 fontSize: 16,
-  //                               ),
-  //                             ).animate().fadeIn()
-  //                           : const Icon(
-  //                               Icons.arrow_forward_rounded,
-  //                               color: Colors.white,
-  //                               size: 28,
-  //                             ).animate().fadeIn(),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildPage(
     BuildContext context,
@@ -351,21 +226,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       children: [
         // Large Image Section
         Positioned(
-          top: size.height * 0.1,
+          top: size.height * 0.15,
           left: 0,
           right: 0,
-          height: size.height * 0.45,
+          height: size.height * 0.4,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
             child:
                 ClipRRect(
                       borderRadius: BorderRadius.circular(32),
@@ -393,7 +259,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     data.title,
                     style: theme.textTheme.displayLarge?.copyWith(
                       height: 1.1,
-                      fontSize: 20,
+                      fontSize: 32,
                       fontWeight: FontWeight.w900,
                       color: theme.colorScheme.onSurface,
                     ),
@@ -408,7 +274,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     data.description,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       height: 1.6,
-                      fontSize: 14,
+                      fontSize: 16,
                       color: theme.colorScheme.onSurface.withOpacity(0.7),
                     ),
                   )

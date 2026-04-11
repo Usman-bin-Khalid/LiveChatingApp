@@ -14,13 +14,17 @@ class HomeScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Dashboard'),
+        surfaceTintColor: Colors.transparent,
+        backgroundColor: theme.scaffoldBackgroundColor,
         actions: [
           IconButton(
             icon: Icon(themeProvider.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded),
             onPressed: () => themeProvider.toggleTheme(),
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: SingleChildScrollView(
@@ -35,7 +39,14 @@ class HomeScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
+                border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.02),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
@@ -49,6 +60,7 @@ class HomeScreen extends StatelessWidget {
                     style: theme.textTheme.displayLarge?.copyWith(
                       color: theme.colorScheme.primary,
                       fontSize: 64,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -56,6 +68,12 @@ class HomeScreen extends StatelessWidget {
                     onPressed: () => homeProvider.incrementCounter(),
                     icon: const Icon(Icons.add_rounded),
                     label: const Text('Increment Value'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    ),
                   ),
                 ],
               ),
@@ -72,6 +90,8 @@ class HomeScreen extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [
             theme.colorScheme.primary,
             theme.colorScheme.primary.withOpacity(0.8),
@@ -80,7 +100,7 @@ class HomeScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.primary.withOpacity(0.2),
+            color: theme.colorScheme.primary.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -88,23 +108,32 @@ class HomeScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Icon(Icons.star_rounded, size: 48, color: Colors.white),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.auto_awesome_rounded, size: 32, color: Colors.white),
+          ),
           const SizedBox(height: 16),
           Text(
-            'Premium UI Ready',
+            'Modern UI Active',
             style: theme.textTheme.displaySmall?.copyWith(
               color: Colors.white,
               fontSize: 24,
+              fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 12),
           Text(
-            'Your application now features a state-of-the-art design, perfect for professional impressions.',
+            'The application is now using the premium Indigo color scheme with modern Inter typography.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white.withOpacity(0.9),
               fontSize: 14,
               height: 1.5,
+              fontFamily: 'Inter',
             ),
           ),
         ],

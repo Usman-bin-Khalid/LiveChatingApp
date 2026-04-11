@@ -59,12 +59,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     final theme = Theme.of(context);
     final chatProvider = context.watch<ChatProvider>();
     final authProvider = context.watch<AuthProvider>();
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         titleSpacing: 0,
         leadingWidth: 70,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        surfaceTintColor: Colors.transparent,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: Container(
@@ -72,7 +75,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
               shape: BoxShape.circle,
-              border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
+              border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
             ),
             child: const Icon(Icons.arrow_back_ios_new_rounded, size: 16),
           ),
@@ -108,7 +111,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               children: [
                 Text(
                   widget.conversation.contactDetails.username,
-                  style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 Row(
                   children: [
@@ -116,14 +119,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       height: 8,
                       width: 8,
                       decoration: const BoxDecoration(
-                        color: Colors.green,
+                        color: Color(0xFF10B981), // Emerald/Green
                         shape: BoxShape.circle,
                       ),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       'Online',
-                      style: theme.textTheme.bodySmall?.copyWith(color: Colors.green),
+                      style: theme.textTheme.bodySmall?.copyWith(color: const Color(0xFF10B981), fontSize: 12),
                     ),
                   ],
                 ),
@@ -168,7 +171,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               child: Text(
                                 DateFormat('EEEE, h:mm a').format(message.createdAt),
-                                style: theme.textTheme.bodySmall,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontSize: 11,
+                                  color: isDark ? Colors.white : theme.textTheme.bodySmall?.color,
+                                ),
                               ),
                             ),
                           _ChatBubble(
@@ -218,18 +224,20 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.05),
+                  color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: TextField(
                   controller: _messageController,
                   maxLines: null,
-                  decoration: const InputDecoration(
+                  style: theme.textTheme.bodyLarge,
+                  decoration: InputDecoration(
                     hintText: 'Type a message...',
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    hintStyle: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.4)),
                   ),
                   onSubmitted: (_) => _sendMessage(),
                 ),
@@ -237,13 +245,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             ),
             const SizedBox(width: 12),
             Container(
+              height: 48,
+              width: 48,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    theme.colorScheme.primary,
-                    theme.colorScheme.primary.darken(10),
-                  ],
-                ),
+                color: theme.colorScheme.primary,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -275,6 +280,7 @@ class _ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Column(
@@ -285,24 +291,13 @@ class _ChatBubble extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
             constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
             decoration: BoxDecoration(
-              gradient: isMe
-                  ? LinearGradient(
-                      colors: [
-                        theme.colorScheme.primary,
-                        theme.colorScheme.primary.darken(10),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-                  : null,
-              color: isMe ? null : theme.colorScheme.surface,
+              color: isMe ? theme.colorScheme.primary : theme.colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(20),
                 topRight: const Radius.circular(20),
                 bottomLeft: Radius.circular(isMe ? 20 : 4),
                 bottomRight: Radius.circular(isMe ? 4 : 20),
               ),
-              border: isMe ? null : Border.all(color: theme.dividerColor.withOpacity(0.05)),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.04),
@@ -324,20 +319,14 @@ class _ChatBubble extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 12, left: 4, right: 4),
             child: Text(
               DateFormat.jm().format(timestamp),
-              style: theme.textTheme.bodySmall?.copyWith(fontSize: 10),
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontSize: 10,
+                color: isDark ? Colors.white : theme.textTheme.bodySmall?.color,
+              ),
             ),
           ),
         ],
       ),
     );
-  }
-}
-
-extension ColorExtension on Color {
-  Color darken([int percent = 10]) {
-    assert(1 <= percent && percent <= 100);
-    var f = 1 - percent / 100;
-    return Color.fromARGB(
-        alpha, (red * f).round(), (green * f).round(), (blue * f).round());
   }
 }

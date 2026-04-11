@@ -57,11 +57,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
       appBar: AppBar(
         centerTitle: false,
         toolbarHeight: 80,
+        surfaceTintColor: Colors.transparent,
+        backgroundColor: theme.scaffoldBackgroundColor,
         title: _isSearching
             ? Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.05),
+                  color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: TextField(
@@ -81,13 +83,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Messages', style: theme.textTheme.displayMedium),
+                  Text('Messages', style: theme.textTheme.displayMedium?.copyWith(fontSize: 28)),
                   if (authProvider.user != null)
                     Text(
                       authProvider.user!.username,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                 ],
@@ -99,7 +101,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
+                border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
               ),
               child: Icon(
                 _isSearching ? Icons.close_rounded : Icons.search_rounded,
@@ -121,7 +123,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: theme.dividerColor.withOpacity(0.1),
+                    color: theme.colorScheme.outline.withOpacity(0.1),
                   ),
                 ),
                 child: Icon(
@@ -140,7 +142,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: theme.dividerColor.withOpacity(0.1),
+                    color: theme.colorScheme.outline.withOpacity(0.1),
                   ),
                 ),
                 child: const Icon(Icons.logout_rounded, size: 20),
@@ -174,8 +176,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
             ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showNewChatModal(context),
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: Colors.white,
+        elevation: 4,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('New Chat'),
+        label: const Text('New Chat', style: TextStyle(fontWeight: FontWeight.bold)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ).animate().scale(delay: 500.ms),
     );
@@ -222,6 +227,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
     ConversationModel conversation,
     int index,
   ) {
+    final isDark = theme.brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
       child: InkWell(
@@ -239,7 +245,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
+            border: Border.all(color: theme.colorScheme.outline.withOpacity(0.05)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.02),
@@ -282,7 +288,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       height: 16,
                       width: 16,
                       decoration: BoxDecoration(
-                        color: Colors.green,
+                        color: const Color(0xFF10B981),
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: theme.colorScheme.surface,
@@ -309,7 +315,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         ),
                         Text(
                           DateFormat.jm().format(conversation.timestamp),
-                          style: theme.textTheme.bodySmall,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontSize: 11,
+                            color: isDark ? Colors.white : theme.textTheme.bodySmall?.color,
+                          ),
                         ),
                       ],
                     ),
@@ -333,7 +342,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
               Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 14,
-                color: theme.colorScheme.primary.withOpacity(0.3),
+                color: isDark ? Colors.white : theme.colorScheme.primary.withOpacity(0.3),
               ),
             ],
           ),
@@ -369,7 +378,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: theme.dividerColor.withOpacity(0.3),
+                      color: theme.colorScheme.outline.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -381,7 +390,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       children: [
                         Text(
                           'Start New Chat',
-                          style: theme.textTheme.displayMedium,
+                          style: theme.textTheme.displayMedium?.copyWith(fontSize: 24),
                         ),
                         IconButton(
                           onPressed: () => Navigator.pop(context),
@@ -400,7 +409,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         hintText: 'Search username or email...',
                         prefixIcon: const Icon(Icons.search_rounded),
                         filled: true,
-                        fillColor: theme.colorScheme.primary.withOpacity(0.05),
+                        fillColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
                       ),
                       onChanged: (value) {
                         authProvider.searchUsers(value);
