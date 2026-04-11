@@ -26,6 +26,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -37,7 +39,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
               fontSize: 12,
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: isDark ? Colors.white : theme.colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
         ),

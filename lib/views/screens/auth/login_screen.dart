@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final theme = Theme.of(context);
     final themeProvider = context.watch<ThemeProvider>();
     final isLoading = context.watch<AuthProvider>().isLoading;
-    final size = MediaQuery.of(context).size;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -101,17 +101,31 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Spacer(flex: 2),
                         Center(
                               child: Container(
-                                padding: const EdgeInsets.all(20),
+                                height: 120,
+                                width: 120,
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary.withOpacity(
-                                    0.1,
-                                  ),
+                                  color: isDark
+                                      ? Colors.white
+                                      : theme.colorScheme.primary.withOpacity(
+                                          0.1,
+                                        ),
                                   shape: BoxShape.circle,
+                                  boxShadow: [
+                                    if (isDark)
+                                      BoxShadow(
+                                        color: Colors.white.withOpacity(0.2),
+                                        blurRadius: 20,
+                                        spreadRadius: 5,
+                                      ),
+                                  ],
                                 ),
-                                child: Icon(
-                                  Icons.chat_bubble_rounded,
-                                  size: 60,
-                                  color: theme.colorScheme.primary,
+                                child: Center(
+                                  child: Image.asset(
+                                    width: 90,
+                                    height: 90,
+                                    fit: BoxFit.fill,
+                                    'assets/images/applogo.png',
+                                  ),
                                 ),
                               ),
                             )
@@ -155,7 +169,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Text(
                               'Forgot Password?',
                               style: TextStyle(
-                                color: theme.colorScheme.primary,
+                                color: isDark
+                                    ? Colors.white
+                                    : theme.colorScheme.primary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -171,8 +187,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(40),
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 18),
-                            // elevation: 8,
-                            // shadowColor: theme.colorScheme.primary.withOpacity(0.4),
                           ),
                           child: isLoading
                               ? const SizedBox(
@@ -221,7 +235,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Text(
                                 'Sign Up',
                                 style: TextStyle(
-                                  color: theme.colorScheme.primary,
+                                  color: isDark
+                                      ? Colors.white
+                                      : theme.colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

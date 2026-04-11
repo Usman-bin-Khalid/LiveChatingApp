@@ -70,6 +70,7 @@ class _SignupScreenState extends State<SignupScreen> {
     final theme = Theme.of(context);
     final themeProvider = context.watch<ThemeProvider>();
     final isLoading = context.watch<AuthProvider>().isLoading;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -131,6 +132,41 @@ class _SignupScreenState extends State<SignupScreen> {
                           ],
                         ),
                         const Spacer(flex: 2),
+                        Center(
+                              child: Container(
+                                height: 120,
+                                width: 120,
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? Colors.white
+                                      : theme.colorScheme.primary.withOpacity(
+                                          0.1,
+                                        ),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    if (isDark)
+                                      BoxShadow(
+                                        color: Colors.white.withOpacity(0.1),
+                                        blurRadius: 20,
+                                        spreadRadius: 5,
+                                      ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Image.asset(
+                                    width: 90,
+                                    height: 90,
+                                    fit: BoxFit.fill,
+                                    'assets/images/applogo.png',
+                                  ),
+                                ),
+                              ),
+                            )
+                            .animate()
+                            .scale(duration: 600.ms, curve: Curves.easeInOut)
+                            .fadeIn(),
+                        const SizedBox(height: 32),
                         Text(
                           'Create Account',
                           textAlign: TextAlign.center,
@@ -176,8 +212,6 @@ class _SignupScreenState extends State<SignupScreen> {
                               borderRadius: BorderRadius.circular(40),
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 18),
-                            // elevation: 8,
-                            // shadowColor: theme.colorScheme.primary.withOpacity(0.4),
                           ),
                           child: isLoading
                               ? const SizedBox(
@@ -219,7 +253,9 @@ class _SignupScreenState extends State<SignupScreen> {
                               child: Text(
                                 'Login',
                                 style: TextStyle(
-                                  color: theme.colorScheme.primary,
+                                  color: isDark
+                                      ? Colors.white
+                                      : theme.colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

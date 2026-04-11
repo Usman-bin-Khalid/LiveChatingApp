@@ -3,7 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'onboarding_screen.dart';
 import '../auth/login_screen.dart';
-import '../home_screen.dart';
+import '../chat/chat_list_screen.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/theme_provider.dart';
@@ -16,13 +16,30 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _progressController;
+
   @override
   void initState() {
     super.initState();
+    _progressController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    );
+
+    // Start filling from 0 to 1
+    _progressController.forward();
+
     if (widget.isNavigating) {
       _navigateToNext();
     }
+  }
+
+  @override
+  void dispose() {
+    _progressController.dispose();
+    super.dispose();
   }
 
   Future<void> _navigateToNext() async {
@@ -42,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (authProvider.isAuthenticated) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const ChatListScreen()),
         );
       } else {
         Navigator.pushReplacement(
@@ -56,90 +73,99 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final themeProvider = context.watch<ThemeProvider>();
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      body: Stack(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: Column(
         children: [
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  theme.colorScheme.primary,
-                  theme.colorScheme.primary.withOpacity(0.8),
-                  theme.colorScheme.secondary.withOpacity(0.6),
-                ],
-              ),
-            ),
+          Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 20,
-                        spreadRadius: 5,
+                Center(
+                      child: Container(
+                        height: 150,
+                        width: 150,
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? Colors.white
+                              : theme.colorScheme.primary.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: isDark
+                                  ? Colors.white.withOpacity(0.2)
+                                  : Colors.black.withOpacity(0.1),
+                              blurRadius: 30,
+                              spreadRadius: 5,
+                            ),
+                          ],
+                          // image: const DecorationImage(
+                          //   image: AssetImage('assets/images/applogo.png'),
+                          //   fit: BoxFit.cover, // Image occupies complete container
+                          // ),
+                        ),
+                        child: Center(
+                          child: Image.asset(
+                            width: 130,
+                            height: 130,
+                            fit: BoxFit.fill,
+                            'assets/images/applogo.png',
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
-                  child: Icon(
-                    Icons.chat_bubble_rounded,
-                    size: 80,
-                    color: theme.colorScheme.primary,
-                  ),
-                )
+                    )
                     .animate()
                     .scale(duration: 800.ms, curve: Curves.elasticOut)
                     .shimmer(delay: 1.seconds, duration: 2.seconds),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
                 Text(
-                  'LiveChat',
+                  'ChatZone',
                   style: theme.textTheme.displayLarge?.copyWith(
-                    color: Colors.white,
-                    letterSpacing: 1.2,
+                    color: isDark ? Colors.white : theme.colorScheme.primary,
+                    letterSpacing: 2,
+                    fontSize: 48,
+                    fontWeight: FontWeight.w900,
                   ),
                 ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.3),
-                const SizedBox(height: 8),
-                Text(
-                  'Connect instantly with anyone',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 16,
-                  ),
-                ).animate().fadeIn(delay: 600.ms),
               ],
             ),
           ),
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 10,
-            right: 20,
-            child: IconButton(
-              icon: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white.withOpacity(0.3)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(48, 0, 48, 100),
+            child: Column(
+              children: [
+                AnimatedBuilder(
+                  animation: _progressController,
+                  builder: (context, child) {
+                    return LinearProgressIndicator(
+                      value: _progressController.value,
+                      // Track: semi-transparent white/purple
+                      backgroundColor: isDark
+                          ? Colors.white.withOpacity(0.1)
+                          : theme.colorScheme.primary.withOpacity(0.1),
+                      // Fill: Pure white/Dark Purple
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        isDark ? Colors.white : theme.colorScheme.primary,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      minHeight: 12,
+                    );
+                  },
                 ),
-                child: Icon(
-                  themeProvider.isDarkMode
-                      ? Icons.light_mode_rounded
-                      : Icons.dark_mode_rounded,
-                  size: 20,
-                  color: Colors.white,
+                const SizedBox(height: 16),
+                Text(
+                  'Loading ChatZone...',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1,
+                  ),
                 ),
-              ),
-              onPressed: () => themeProvider.toggleTheme(),
+              ],
             ),
-          ),
+          ).animate().fadeIn(delay: 800.ms),
         ],
       ),
     );
