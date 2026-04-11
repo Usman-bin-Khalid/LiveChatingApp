@@ -104,7 +104,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     decoration: BoxDecoration(
                       color: theme.colorScheme.surface,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
+                      border: Border.all(
+                        color: theme.colorScheme.outline.withOpacity(0.1),
+                      ),
                     ),
                     child: Icon(
                       themeProvider.isDarkMode
@@ -118,7 +120,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 TextButton(
                   onPressed: _completeOnboarding,
                   style: TextButton.styleFrom(
-                    foregroundColor: theme.colorScheme.onSurface.withOpacity(0.5),
+                    foregroundColor: theme.colorScheme.onSurface.withOpacity(
+                      0.5,
+                    ),
                   ),
                   child: const Text(
                     'Skip',
@@ -259,7 +263,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     data.title,
                     style: theme.textTheme.displayLarge?.copyWith(
                       height: 1.1,
-                      fontSize: 32,
+                      fontSize: 26,
                       fontWeight: FontWeight.w900,
                       color: theme.colorScheme.onSurface,
                     ),
