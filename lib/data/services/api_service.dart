@@ -5,8 +5,9 @@ class ApiService {
   static const String baseUrl = 'https://live-chating-apis.onrender.com';
   final Dio _dio = Dio(BaseOptions(
     baseUrl: baseUrl,
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
+    connectTimeout: const Duration(seconds: 15), // Slightly increased for stability
+    receiveTimeout: const Duration(seconds: 15),
+    validateStatus: (status) => status != null && status < 500, // Handle non-500 errors gracefully
   ));
 
   ApiService() {
@@ -18,6 +19,14 @@ class ApiService {
           options.headers['Authorization'] = 'Bearer $token';
         }
         return handler.next(options);
+      },
+      onError: (DioException e, handler) {
+        // Handle connection errors specifically
+        if (e.type == DioExceptionType.connectionTimeout || 
+            e.type == DioExceptionType.receiveTimeout) {
+          print('Network Timeout: Please check your connection.');
+        }
+        return handler.next(e);
       },
     ));
   }

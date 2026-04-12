@@ -209,15 +209,19 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       ),
       child: SafeArea(
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end, // Changed to end to align with growing text field
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.add_rounded, color: theme.colorScheme.primary),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.add_rounded, color: theme.colorScheme.primary),
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -229,7 +233,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 ),
                 child: TextField(
                   controller: _messageController,
-                  maxLines: null,
+                  maxLines: 4, // Limit max height to 4 lines
+                  minLines: 1, // Start with 1 line
                   style: theme.textTheme.bodyLarge,
                   decoration: InputDecoration(
                     hintText: 'Type a message...',
@@ -239,22 +244,30 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     hintStyle: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.4)),
                   ),
-                  onSubmitted: (_) => _sendMessage(),
                 ),
               ),
             ),
             const SizedBox(width: 12),
-            Container(
-              height: 48,
-              width: 48,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary,
-                shape: BoxShape.circle,
-
-              ),
-              child: IconButton(
-                onPressed: _sendMessage,
-                icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Container(
+                height: 48,
+                width: 48,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: theme.colorScheme.primary.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  onPressed: _sendMessage,
+                  icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+                ),
               ),
             ),
           ],

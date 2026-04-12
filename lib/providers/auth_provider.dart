@@ -14,12 +14,15 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _user != null;
 
   Future<bool> login(String email, String password) async {
+    if (_isLoading) return false; // Prevent multiple simultaneous login calls
+    
     _isLoading = true;
     notifyListeners();
     try {
       _user = await _authRepository.login(email, password);
       return _user != null;
     } catch (e) {
+      print('Login error: $e');
       return false;
     } finally {
       _isLoading = false;

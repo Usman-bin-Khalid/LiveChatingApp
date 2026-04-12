@@ -18,10 +18,18 @@ class ChatProvider extends ChangeNotifier {
 
   ChatProvider(this._chatRepository, this._socketService) {
     _socketService.messages.listen((message) {
-      // Only add to messages if it belongs to current active chat
-      // For simplicity, we add it and UI handles filtering or we can store currentChatId
-      _messages.add(message);
-      notifyListeners();
+      // Avoid duplicate messages if they were added optimistically
+      final bool alreadyExists = _messages.any((m) => 
+        m.text == message.text && 
+        m.sender == message.sender && 
+        m.receiver == message.receiver &&
+        message.createdAt.difference(m.createdAt).inSeconds.abs() < 5
+      );
+
+      if (!alreadyExists) {
+        _messages.add(message);
+        notifyListeners();
+      }
       fetchInbox(); // Refresh inbox to see latest message
     });
   }
