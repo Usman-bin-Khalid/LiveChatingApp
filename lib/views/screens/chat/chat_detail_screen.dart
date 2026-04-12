@@ -209,22 +209,22 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       ),
       child: SafeArea(
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end, // Changed to end to align with growing text field
+          crossAxisAlignment: CrossAxisAlignment.center, // Changed to end to align with growing text field
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.add_rounded, color: theme.colorScheme.primary),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
+            // Padding(
+            //   padding: const EdgeInsets.only(bottom: 4),
+            //   child: Container(
+            //     decoration: BoxDecoration(
+            //       color: theme.colorScheme.primary.withOpacity(0.1),
+            //       shape: BoxShape.circle,
+            //     ),
+            //     child: IconButton(
+            //       onPressed: () {},
+            //       icon: Icon(Icons.add_rounded, color: theme.colorScheme.primary),
+            //     ),
+            //   ),
+            // ),
+            // const SizedBox(width: 12),
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -238,6 +238,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   style: theme.textTheme.bodyLarge,
                   decoration: InputDecoration(
                     hintText: 'Type a message...',
+                    filled: true,
+                    fillColor: Colors.transparent,
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
@@ -248,9 +250,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               ),
             ),
             const SizedBox(width: 12),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Container(
+
+           Container(
                 height: 48,
                 width: 48,
                 decoration: BoxDecoration(
@@ -269,7 +270,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
                 ),
               ),
-            ),
+
           ],
         ),
       ),

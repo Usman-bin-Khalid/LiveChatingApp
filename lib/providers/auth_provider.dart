@@ -74,9 +74,9 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> checkAuth() async {
     final userId = await _authRepository.getUserId();
+    final username = await _authRepository.getUsername();
     if (userId != null) {
-      // In a real app, you might fetch user profile here
-      _user = UserModel(id: userId, username: 'User', email: '');
+      _user = UserModel(id: userId, username: username ?? 'User', email: '');
       notifyListeners();
     }
   }

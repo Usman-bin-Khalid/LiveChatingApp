@@ -21,6 +21,7 @@ class AuthRepository {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
         await prefs.setString('userId', userData['id'] ?? userData['_id']);
+        await prefs.setString('username', userData['username'] ?? 'User');
 
         return UserModel.fromJson(userData);
       }
@@ -46,6 +47,7 @@ class AuthRepository {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
     await prefs.remove('userId');
+    await prefs.remove('username');
   }
 
   Future<List<UserModel>> searchUsers(String query) async {
@@ -68,5 +70,10 @@ class AuthRepository {
   Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('userId');
+  }
+
+  Future<String?> getUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('username');
   }
 }

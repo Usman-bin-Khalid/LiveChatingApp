@@ -83,7 +83,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Messages', style: theme.textTheme.displayMedium?.copyWith(fontSize: 28)),
+                  Text('Messages', style: theme.textTheme.displayMedium?.copyWith(fontSize: 23)),
                   if (authProvider.user != null)
                     Text(
                       authProvider.user!.username,

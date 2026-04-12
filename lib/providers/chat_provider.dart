@@ -30,7 +30,7 @@ class ChatProvider extends ChangeNotifier {
         _messages.add(message);
         notifyListeners();
       }
-      fetchInbox(); // Refresh inbox to see latest message
+      fetchInbox(silent: true); // Silently refresh inbox to see latest message
     });
   }
 
@@ -61,9 +61,11 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchInbox() async {
-    _isLoading = true;
-    notifyListeners();
+  Future<void> fetchInbox({bool silent = false}) async {
+    if (!silent) {
+      _isLoading = true;
+      notifyListeners();
+    }
     try {
       _inbox = await _chatRepository.getInbox();
     } catch (e) {
@@ -100,6 +102,7 @@ class ChatProvider extends ChangeNotifier {
     );
     _messages.add(newMessage);
     notifyListeners();
+    fetchInbox(silent: true); // Silently refresh inbox to show new contact immediately
   }
   
   void connectSocket(String userId) {
